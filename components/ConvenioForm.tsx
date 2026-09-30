@@ -12,6 +12,7 @@ const emptyForm = {
   title: '',
   company_name: '',
   category_id: '',
+  audience: 'familias' as 'familias' | 'docentes',
   logo_url: '',
   cover_image_url: '',
   short_description: '',
@@ -50,7 +51,7 @@ export default function ConvenioForm({ convenio }: Props) {
 
     const payload: Record<string, any> = {
       ...form,
-      slug: convenio?.slug || slugify(`${form.company_name}-${form.title}`),
+      slug: convenio?.slug || slugify(`${form.company_name}-${form.title}-${form.audience}`),
       valid_from: form.valid_from || null,
       valid_until: form.valid_until || null,
     }
@@ -71,6 +72,32 @@ export default function ConvenioForm({ convenio }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-3xl">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium text-marino mb-2">Comunidad</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="audience"
+                checked={form.audience === 'familias'}
+                onChange={() => set('audience', 'familias')}
+              />
+              Familias y Estudiantes
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="audience"
+                checked={form.audience === 'docentes'}
+                onChange={() => set('audience', 'docentes')}
+              />
+              Personal Docente y No Docente
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-marino mb-1">Empresa</label>

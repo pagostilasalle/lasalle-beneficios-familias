@@ -1,20 +1,24 @@
+import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
+import { isAudience } from '@/lib/utils'
 import type { Faq } from '@/lib/types'
 import FaqAcordeon from '@/components/FaqAcordeon'
 
 export const revalidate = 60
 
-async function getFaqs() {
+async function getFaqs(audience: string) {
   const { data } = await supabase
     .from('faqs')
     .select('*')
     .eq('active', true)
+    .eq('audience', audience)
     .order('sort_order')
   return (data as Faq[]) ?? []
 }
 
-export default async function PreguntasFrecuentesPage() {
-  const faqs = await getFaqs()
+export default async function PreguntasFrecuentesPage({ params }: { params: { audience: string } }) {
+  if (!isAudience(params.audience)) notFound()
+  const faqs = await getFaqs(params.audience)
 
   return (
     <>

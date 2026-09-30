@@ -2,23 +2,30 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
+import { isAudience } from '@/lib/utils'
 import type { Benefit, Category } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 export const revalidate = 60
 
-async function getConvenio(slug: string) {
+async function getConvenio(slug: string, audience: string) {
   const { data } = await supabase
     .from('benefits')
     .select('*, category:categories(*)')
     .eq('slug', slug)
     .eq('status', 'active')
+    .eq('audience', audience)
     .single()
   return data as (Benefit & { category: Category }) | null
 }
 
-export default async function ConvenioDetallePage({ params }: { params: { slug: string } }) {
-  const convenio = await getConvenio(params.slug)
+export default async function ConvenioDetallePage({
+  params,
+}: {
+  params: { audience: string; slug: string }
+}) {
+  if (!isAudience(params.audience)) notFound()
+  const convenio = await getConvenio(params.slug, params.audience)
   if (!convenio) notFound()
 
   return (
@@ -30,7 +37,7 @@ export default async function ConvenioDetallePage({ params }: { params: { slug: 
         <div className="absolute inset-0 bg-[#1B2A6B]/80" />
         <div className="relative max-w-4xl mx-auto px-4 py-14 text-white">
           <nav className="text-sm text-white/70 mb-4">
-            <Link href="/convenios" className="hover:text-white">Convenios</Link>
+            <Link href={`/${params.audience}/convenios`} className="hover:text-white">Convenios</Link>
             {' / '}
             <span>{convenio.category?.name}</span>
             {' / '}
@@ -124,7 +131,7 @@ export default async function ConvenioDetallePage({ params }: { params: { slug: 
           </div>
 
           <Link
-            href="/contacto"
+            href={`/${params.audience}/contacto`}
             className="text-center bg-naranja hover:bg-naranjaHover text-white px-4 py-3 rounded-xl font-medium transition-colors"
           >
             ¿Tenés dudas? Escribinos

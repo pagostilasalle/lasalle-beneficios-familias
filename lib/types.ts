@@ -1,3 +1,5 @@
+import type { Audience } from './utils'
+
 export type Category = {
   id: string
   name: string
@@ -12,6 +14,7 @@ export type Benefit = {
   title: string
   company_name: string
   category_id: string
+  audience: Audience
   category?: Category
   logo_url: string | null
   cover_image_url: string | null
@@ -38,6 +41,7 @@ export type Faq = {
   id: string
   question: string
   answer: string
+  audience: Audience
   sort_order: number
   active: boolean
 }
@@ -48,6 +52,7 @@ export type ContactMessage = {
   email: string
   phone: string | null
   message: string
+  audience: Audience
   status: 'pending' | 'read'
   created_at: string
 }

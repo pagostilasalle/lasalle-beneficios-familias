@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import type { Audience } from '@/lib/utils'
 
-export default function ContactoForm() {
+export default function ContactoForm({ audience }: { audience: Audience }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [estado, setEstado] = useState<'idle' | 'enviando' | 'ok' | 'error'>('idle')
 
@@ -13,7 +14,7 @@ export default function ContactoForm() {
       const res = await fetch('/api/contacto', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, audience }),
       })
       if (!res.ok) throw new Error()
       setEstado('ok')

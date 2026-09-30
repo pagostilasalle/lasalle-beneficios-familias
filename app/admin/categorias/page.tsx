@@ -49,8 +49,8 @@ export default function AdminCategoriasPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-marino">Rubros</h1>
       <p className="text-gray-500 text-sm max-w-xl">
-        Los rubros inactivos no se muestran en el sitio público, aunque tengan convenios cargados.
-        Un rubro activo solo aparece en /convenios si tiene al menos un convenio activo.
+        Los rubros son compartidos entre las dos comunidades (Familias y Docentes). Un rubro solo
+        aparece en /convenios de cada comunidad si tiene al menos un convenio activo de esa comunidad.
       </p>
 
       <form onSubmit={crear} className="flex gap-3 max-w-md">

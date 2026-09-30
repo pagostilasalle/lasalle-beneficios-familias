@@ -3,15 +3,17 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import type { Faq } from '@/lib/types'
+import { audienceLabel, type Audience } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
-const emptyForm = { question: '', answer: '' }
+const emptyForm = { question: '', answer: '', audience: 'familias' as Audience }
 
 export default function AdminFaqPage() {
   const [faqs, setFaqs] = useState<Faq[]>([])
   const [form, setForm] = useState(emptyForm)
   const [editando, setEditando] = useState<string | null>(null)
+  const [filtroAudience, setFiltroAudience] = useState<'todos' | Audience>('todos')
 
   const load = async () => {
     const { data } = await supabase.from('faqs').select('*').order('sort_order')
@@ -35,7 +37,7 @@ export default function AdminFaqPage() {
   }
 
   const editar = (faq: Faq) => {
-    setForm({ question: faq.question, answer: faq.answer })
+    setForm({ question: faq.question, answer: faq.answer, audience: faq.audience })
     setEditando(faq.id)
   }
 
@@ -50,11 +52,26 @@ export default function AdminFaqPage() {
     load()
   }
 
+  const faqsFiltradas = faqs.filter((f) => filtroAudience === 'todos' || f.audience === filtroAudience)
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-marino">Preguntas frecuentes</h1>
 
       <form onSubmit={guardar} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4 max-w-2xl">
+        <div>
+          <label className="block text-sm font-medium text-marino mb-2">Comunidad</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="radio" name="faq-audience" checked={form.audience === 'familias'} onChange={() => setForm({ ...form, audience: 'familias' })} />
+              Familias y Estudiantes
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="radio" name="faq-audience" checked={form.audience === 'docentes'} onChange={() => setForm({ ...form, audience: 'docentes' })} />
+              Personal Docente y No Docente
+            </label>
+          </div>
+        </div>
         <div>
           <label className="block text-sm font-medium text-marino mb-1">Pregunta</label>
           <input value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })}
@@ -78,10 +95,23 @@ export default function AdminFaqPage() {
         </div>
       </form>
 
+      <select
+        value={filtroAudience}
+        onChange={(e) => setFiltroAudience(e.target.value as any)}
+        className="border border-gray-200 rounded-xl px-4 py-2.5 max-w-xs"
+      >
+        <option value="todos">Ambas comunidades</option>
+        <option value="familias">Familias y Estudiantes</option>
+        <option value="docentes">Personal Docente y No Docente</option>
+      </select>
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
-        {faqs.map((faq) => (
+        {faqsFiltradas.map((faq) => (
           <div key={faq.id} className="px-6 py-4 flex items-start justify-between gap-4">
             <div>
+              <span className={`inline-block mb-1 text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full ${faq.audience === 'familias' ? 'bg-[#FFF3E0] text-naranja' : 'bg-fondo text-marino'}`}>
+                {audienceLabel(faq.audience)}
+              </span>
               <p className="font-medium text-marino">{faq.question}</p>
               <p className="text-sm text-gray-500 mt-1">{faq.answer}</p>
             </div>

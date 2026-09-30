@@ -3,15 +3,16 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { normalizar } from '@/lib/utils'
+import { normalizar, type Audience } from '@/lib/utils'
 import type { Benefit, Category } from '@/lib/types'
 
 type Props = {
+  audience: Audience
   categories: Category[]
   benefits: Benefit[]
 }
 
-export default function ConveniosConBusqueda({ categories, benefits }: Props) {
+export default function ConveniosConBusqueda({ audience, categories, benefits }: Props) {
   const [busqueda, setBusqueda] = useState('')
   const [rubroActivo, setRubroActivo] = useState<string | 'todos'>('todos')
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({})
@@ -29,7 +30,6 @@ export default function ConveniosConBusqueda({ categories, benefits }: Props) {
     })
   }, [busqueda, rubroActivo, benefits])
 
-  // Solo rubros que tienen al menos un convenio activo (con o sin filtro de búsqueda)
   const rubrosConConvenios = useMemo(() => {
     return categories
       .filter((c) => c.active)
@@ -42,7 +42,6 @@ export default function ConveniosConBusqueda({ categories, benefits }: Props) {
 
   return (
     <div>
-      {/* Buscador */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           type="text"
@@ -53,7 +52,6 @@ export default function ConveniosConBusqueda({ categories, benefits }: Props) {
         />
       </div>
 
-      {/* Pills de rubro */}
       <div className="flex flex-wrap gap-2 mb-8">
         <button
           onClick={() => setRubroActivo('todos')}
@@ -83,7 +81,6 @@ export default function ConveniosConBusqueda({ categories, benefits }: Props) {
           ))}
       </div>
 
-      {/* Acordeón por rubro — solo rubros con convenios activos */}
       {rubrosConConvenios.length === 0 && (
         <p className="text-gray-500 text-center py-12">
           No encontramos convenios que coincidan con tu búsqueda.
@@ -118,7 +115,7 @@ export default function ConveniosConBusqueda({ categories, benefits }: Props) {
                   {items.map((b) => (
                     <Link
                       key={b.id}
-                      href={`/convenios/${b.slug}`}
+                      href={`/${audience}/convenios/${b.slug}`}
                       className="border border-gray-100 rounded-2xl p-4 hover:shadow-md transition-shadow bg-white flex flex-col gap-2"
                     >
                       <div className="flex items-center gap-3">

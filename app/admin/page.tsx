@@ -7,7 +7,8 @@ export const dynamic = 'force-dynamic'
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
-    activos: 0,
+    activosFamilias: 0,
+    activosDocentes: 0,
     inactivos: 0,
     porRubro: [] as { rubro: string; cantidad: number }[],
     mensajesPendientes: 0,
@@ -17,14 +18,15 @@ export default function AdminDashboardPage() {
     const load = async () => {
       const { data: benefits } = await supabase
         .from('benefits')
-        .select('status, category:categories(name)')
+        .select('status, audience, category:categories(name)')
 
       const { count: mensajesPendientes } = await supabase
         .from('contact_messages')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending')
 
-      const activos = (benefits ?? []).filter((b: any) => b.status === 'active').length
+      const activosFamilias = (benefits ?? []).filter((b: any) => b.status === 'active' && b.audience === 'familias').length
+      const activosDocentes = (benefits ?? []).filter((b: any) => b.status === 'active' && b.audience === 'docentes').length
       const inactivos = (benefits ?? []).filter((b: any) => b.status === 'inactive').length
 
       const conteoRubro: Record<string, number> = {}
@@ -36,7 +38,8 @@ export default function AdminDashboardPage() {
         })
 
       setStats({
-        activos,
+        activosFamilias,
+        activosDocentes,
         inactivos,
         porRubro: Object.entries(conteoRubro).map(([rubro, cantidad]) => ({ rubro, cantidad })),
         mensajesPendientes: mensajesPendientes ?? 0,
@@ -49,13 +52,17 @@ export default function AdminDashboardPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-marino">Dashboard</h1>
 
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <p className="text-gray-500 text-sm">Convenios activos</p>
-          <p className="text-3xl font-bold text-marino">{stats.activos}</p>
+          <p className="text-gray-500 text-sm">Activos — Familias</p>
+          <p className="text-3xl font-bold text-marino">{stats.activosFamilias}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <p className="text-gray-500 text-sm">Convenios inactivos</p>
+          <p className="text-gray-500 text-sm">Activos — Docentes</p>
+          <p className="text-3xl font-bold text-marino">{stats.activosDocentes}</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <p className="text-gray-500 text-sm">Inactivos (total)</p>
           <p className="text-3xl font-bold text-marino">{stats.inactivos}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -65,7 +72,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="font-semibold text-marino mb-4">Convenios activos por rubro</h2>
+        <h2 className="font-semibold text-marino mb-4">Convenios activos por rubro (ambas comunidades)</h2>
         {stats.porRubro.length === 0 ? (
           <p className="text-gray-500 text-sm">Sin datos todavía.</p>
         ) : (

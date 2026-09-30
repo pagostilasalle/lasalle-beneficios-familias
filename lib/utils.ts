@@ -1,4 +1,4 @@
-// Normaliza texto para búsqueda sin tildes ni mayúsculas (mismo criterio que merch)
+// Normaliza texto para búsqueda sin tildes ni mayúsculas
 export function normalizar(texto: string): string {
   return texto
     .normalize('NFD')
@@ -20,4 +20,14 @@ export function formatDate(date: string | null): string {
     month: '2-digit',
     year: 'numeric',
   })
+}
+
+export type Audience = 'familias' | 'docentes'
+
+export function isAudience(value: string): value is Audience {
+  return value === 'familias' || value === 'docentes'
+}
+
+export function audienceLabel(audience: Audience): string {
+  return audience === 'familias' ? 'Familias y Estudiantes' : 'Personal Docente y No Docente'
 }
