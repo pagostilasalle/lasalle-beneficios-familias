@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1B2A6B] outline-none"
+          className="border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1e2a65] outline-none"
         />
         {error && <p className="text-red-600 text-sm">Contraseña incorrecta.</p>}
         <button type="submit" className="bg-marino hover:bg-marinoHover text-white px-6 py-3 rounded-xl font-medium transition-colors">

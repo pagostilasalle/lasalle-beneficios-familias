@@ -8,10 +8,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        marino: '#1B2A6B',
-        marinoHover: '#2A3D8F',
-        naranja: '#F4821F',
-        naranjaHover: '#d4711a',
+        marino: '#1e2a65',
+        marinoHover: '#2c3a80',
+        naranja: '#f38322',
+        naranjaHover: '#d9711a',
         fondo: '#F5F6FA',
       },
       fontFamily: {

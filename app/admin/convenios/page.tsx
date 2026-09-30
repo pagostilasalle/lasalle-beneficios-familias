@@ -67,7 +67,7 @@ export default function AdminConveniosPage() {
           placeholder="Buscar..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1B2A6B] outline-none"
+          className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none"
         />
         <select
           value={filtroAudience}

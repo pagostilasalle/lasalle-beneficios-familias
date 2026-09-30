@@ -75,12 +75,12 @@ export default function AdminFaqPage() {
         <div>
           <label className="block text-sm font-medium text-marino mb-1">Pregunta</label>
           <input value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1B2A6B] outline-none" />
+            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>
           <label className="block text-sm font-medium text-marino mb-1">Respuesta</label>
           <textarea rows={3} value={form.answer} onChange={(e) => setForm({ ...form, answer: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1B2A6B] outline-none" />
+            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div className="flex gap-3">
           <button className="bg-marino hover:bg-marinoHover text-white px-5 py-2.5 rounded-xl font-medium">

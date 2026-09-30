@@ -34,7 +34,7 @@ export default async function ConvenioDetallePage({
         className="relative"
         style={{ backgroundImage: 'url(/banner.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
-        <div className="absolute inset-0 bg-[#1B2A6B]/80" />
+        <div className="absolute inset-0 bg-[#1e2a65]/80" />
         <div className="relative max-w-4xl mx-auto px-4 py-14 text-white">
           <nav className="text-sm text-white/70 mb-4">
             <Link href={`/${params.audience}/convenios`} className="hover:text-white">Convenios</Link>

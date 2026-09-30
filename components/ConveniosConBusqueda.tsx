@@ -48,7 +48,7 @@ export default function ConveniosConBusqueda({ audience, categories, benefits }:
           placeholder="Buscar convenio o empresa..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="flex-1 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1B2A6B] outline-none"
+          className="flex-1 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1e2a65] outline-none"
         />
       </div>
 
