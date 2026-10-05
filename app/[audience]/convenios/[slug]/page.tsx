@@ -3,20 +3,20 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import { isAudience, visibleAudiences, type Audience } from '@/lib/utils'
-import type { Benefit, Category } from '@/lib/types'
-import { formatDate } from '@/lib/utils'
+import type { BenefitPublic, Category } from '@/lib/types'
+import { BENEFIT_PUBLIC_COLUMNS } from '@/lib/benefitColumns'
 
 export const revalidate = 60
 
 async function getConvenio(slug: string, audience: Audience) {
   const { data } = await supabase
     .from('benefits')
-    .select('*, category:categories(*)')
+    .select(`${BENEFIT_PUBLIC_COLUMNS}, category:categories(*)`)
     .eq('slug', slug)
     .eq('status', 'active')
     .in('audience', visibleAudiences(audience))
     .single()
-  return data as (Benefit & { category: Category }) | null
+  return data as unknown as (BenefitPublic & { category: Category }) | null
 }
 
 export default async function ConvenioDetallePage({
@@ -96,39 +96,16 @@ export default async function ConvenioDetallePage({
         </div>
 
         <aside className="flex flex-col gap-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-3">
-            <h3 className="font-semibold text-marino">Datos del convenio</h3>
-            <div className="text-sm text-gray-600">
-              <p className="font-medium text-marino">Vigencia</p>
-              <p>
-                Desde {formatDate(convenio.valid_from)} · Hasta {formatDate(convenio.valid_until)}
-              </p>
-            </div>
-            {convenio.contact_email && (
-              <div className="text-sm text-gray-600">
-                <p className="font-medium text-marino">Contacto de la empresa</p>
-                <a href={`mailto:${convenio.contact_email}`} className="text-marino hover:text-naranja">
-                  {convenio.contact_email}
-                </a>
-              </div>
-            )}
-            {convenio.contact_phone && (
-              <div className="text-sm text-gray-600">
-                <p className="font-medium text-marino">Teléfono</p>
-                <p>{convenio.contact_phone}</p>
-              </div>
-            )}
-            {convenio.external_link && (
-              <a
-                href={convenio.external_link}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 text-center bg-marino hover:bg-marinoHover text-white px-4 py-3 rounded-xl font-medium transition-colors"
-              >
-                Visitar sitio de {convenio.company_name}
-              </a>
-            )}
-          </div>
+          {convenio.external_link && (
+            <a
+              href={convenio.external_link}
+              target="_blank"
+              rel="noreferrer"
+              className="text-center bg-marino hover:bg-marinoHover text-white px-4 py-3 rounded-xl font-medium transition-colors"
+            >
+              Visitar sitio de {convenio.company_name}
+            </a>
+          )}
 
           <Link
             href={`/${params.audience}/contacto`}

@@ -13,13 +13,33 @@ export function slugify(texto: string): string {
     .replace(/(^-|-$)/g, '')
 }
 
+// Las fechas de la base vienen como 'AAAA-MM-DD'. Se arman como fecha LOCAL para que no
+// se corran un día por la zona horaria (new Date('2026-12-31') mostraba 30/12 en Argentina).
+function parseLocalDate(date: string): Date {
+  const [y, m, d] = date.slice(0, 10).split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
 export function formatDate(date: string | null): string {
-  if (!date) return 'Sin vencimiento'
-  return new Date(date).toLocaleDateString('es-AR', {
+  if (!date) return 'Sin fecha'
+  return parseLocalDate(date).toLocaleDateString('es-AR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   })
+}
+
+export type VigenciaEstado = { tone: 'none' | 'ok' | 'soon' | 'expired'; label: string }
+
+// Estado de vigencia para el listado del admin. "soon" = vence en 30 días o menos.
+export function vigenciaEstado(validUntil: string | null, hoy: Date = new Date()): VigenciaEstado {
+  if (!validUntil) return { tone: 'none', label: 'Sin fecha' }
+  const fin = parseLocalDate(validUntil)
+  const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
+  const dias = Math.round((fin.getTime() - inicioHoy.getTime()) / 86400000)
+  if (dias < 0) return { tone: 'expired', label: `Vencido el ${formatDate(validUntil)}` }
+  if (dias <= 30) return { tone: 'soon', label: `Vence el ${formatDate(validUntil)}` }
+  return { tone: 'ok', label: `Hasta el ${formatDate(validUntil)}` }
 }
 
 export type Audience = 'familias' | 'docentes'

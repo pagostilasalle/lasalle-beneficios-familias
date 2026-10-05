@@ -9,7 +9,8 @@ export type Category = {
   active: boolean
 }
 
-export type Benefit = {
+// Lo que puede ver cualquier persona que entre al sitio.
+export type BenefitPublic = {
   id: string
   title: string
   company_name: string
@@ -25,10 +26,6 @@ export type Benefit = {
   how_to_redeem: string
   terms_conditions: string | null
   external_link: string | null
-  contact_email: string | null
-  contact_phone: string | null
-  valid_from: string | null
-  valid_until: string | null
   status: 'active' | 'inactive'
   is_featured: boolean
   is_new: boolean
@@ -36,6 +33,17 @@ export type Benefit = {
   created_at: string
   updated_at: string
 }
+
+// Información interna: solo la ve quien administra (backoffice). Nunca se muestra en el sitio.
+export type BenefitPrivate = {
+  contact_email: string | null
+  contact_phone: string | null
+  valid_from: string | null
+  valid_until: string | null
+  internal_notes: string | null
+}
+
+export type Benefit = BenefitPublic & BenefitPrivate
 
 export type Faq = {
   id: string

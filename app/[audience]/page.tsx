@@ -3,20 +3,21 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import { isAudience, audienceLabel, visibleAudiences, type Audience } from '@/lib/utils'
-import type { Benefit, Category } from '@/lib/types'
+import type { BenefitPublic, Category } from '@/lib/types'
+import { BENEFIT_PUBLIC_COLUMNS } from '@/lib/benefitColumns'
 
 export const revalidate = 60
 
 async function getDestacados(audience: Audience) {
   const { data } = await supabase
     .from('benefits')
-    .select('*')
+    .select(BENEFIT_PUBLIC_COLUMNS)
     .eq('status', 'active')
     .in('audience', visibleAudiences(audience))
     .or('is_featured.eq.true,is_new.eq.true')
     .order('created_at', { ascending: false })
     .limit(6)
-  return (data as Benefit[]) ?? []
+  return (data as unknown as BenefitPublic[]) ?? []
 }
 
 async function getRubrosConConvenios(audience: Audience) {
@@ -40,7 +41,7 @@ async function getStats(audience: Audience) {
   const [{ count: totalConvenios }, rubros] = await Promise.all([
     supabase
       .from('benefits')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'active')
       .in('audience', visibleAudiences(audience)),
     getRubrosConConvenios(audience),

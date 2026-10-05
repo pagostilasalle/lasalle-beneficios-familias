@@ -14,7 +14,7 @@ export const ADMIN_TABLES: Record<string, TableConfig> = {
     writable: [
       'title', 'company_name', 'category_id', 'audience', 'logo_url', 'cover_image_url',
       'short_description', 'full_description', 'who_can_apply', 'how_to_apply', 'how_to_redeem',
-      'terms_conditions', 'external_link', 'contact_email', 'contact_phone',
+      'terms_conditions', 'external_link', 'contact_email', 'contact_phone', 'internal_notes',
       'valid_from', 'valid_until', 'status', 'is_featured', 'is_new', 'slug',
     ],
   },

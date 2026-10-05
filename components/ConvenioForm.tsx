@@ -24,6 +24,7 @@ const emptyForm = {
   external_link: '',
   contact_email: '',
   contact_phone: '',
+  internal_notes: '',
   valid_from: '',
   valid_until: '',
   status: 'active' as 'active' | 'inactive',
@@ -170,33 +171,47 @@ export default function ConvenioForm({ convenio }: Props) {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 grid sm:grid-cols-2 gap-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <label className="block text-sm font-medium text-marino mb-1">Link externo (opcional)</label>
+        <p className="text-xs text-gray-500 mb-2">Se muestra en el sitio como un botón «Visitar sitio de…».</p>
+        <input value={form.external_link ?? ''} onChange={(e) => set('external_link', e.target.value)}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
+      </div>
+
+      <div className="bg-fondo rounded-2xl border-2 border-dashed border-gray-300 p-6 flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">Email de contacto de la empresa</label>
-          <input value={form.contact_email ?? ''} onChange={(e) => set('contact_email', e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
+          <p className="text-sm font-semibold text-marino">🔒 Información interna</p>
+          <p className="text-xs text-gray-600 mt-0.5">
+            Es solo para la gestión del convenio. <strong>No se muestra en el sitio</strong>: únicamente se ve acá, en el backoffice.
+          </p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-marino mb-1">Teléfono de contacto</label>
-          <input value={form.contact_phone ?? ''} onChange={(e) => set('contact_phone', e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-marino mb-1">Link externo (opcional)</label>
-          <input value={form.external_link ?? ''} onChange={(e) => set('external_link', e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-marino mb-1">Email de contacto de la empresa</label>
+            <input value={form.contact_email ?? ''} onChange={(e) => set('contact_email', e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-marino mb-1">Teléfono de contacto</label>
+            <input value={form.contact_phone ?? ''} onChange={(e) => set('contact_phone', e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
+          </div>
           <div>
             <label className="block text-sm font-medium text-marino mb-1">Vigente desde</label>
             <input type="date" value={form.valid_from ?? ''} onChange={(e) => set('valid_from', e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5" />
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-white" />
           </div>
           <div>
             <label className="block text-sm font-medium text-marino mb-1">Vigente hasta</label>
             <input type="date" value={form.valid_until ?? ''} onChange={(e) => set('valid_until', e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5" />
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-white" />
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-marino mb-1">Notas internas</label>
+          <textarea rows={3} value={form.internal_notes ?? ''} onChange={(e) => set('internal_notes', e.target.value)}
+            placeholder="Ej: contacto con Juan (comercial), renovar en marzo, condiciones acordadas por mail…"
+            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
       </div>
 

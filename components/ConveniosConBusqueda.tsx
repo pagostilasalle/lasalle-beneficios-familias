@@ -4,12 +4,12 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { normalizar, type Audience } from '@/lib/utils'
-import type { Benefit, Category } from '@/lib/types'
+import type { BenefitPublic, Category } from '@/lib/types'
 
 type Props = {
   audience: Audience
   categories: Category[]
-  benefits: Benefit[]
+  benefits: BenefitPublic[]
 }
 
 export default function ConveniosConBusqueda({ audience, categories, benefits }: Props) {

@@ -50,3 +50,11 @@ Ver instrucciones completas de Supabase, Resend y Vercel en las conversaciones p
 - Variables **secretas** (solo servidor, sin `NEXT_PUBLIC_`): `ADMIN_PASSWORD` y `SUPABASE_SERVICE_ROLE_KEY`.
   La variable vieja `NEXT_PUBLIC_ADMIN_PASSWORD` **ya no se usa y hay que borrarla** de Vercel y de `.env.local`.
 - `supabase/security.sql` cierra los permisos públicos de la base (correr una vez, al final).
+
+## Información interna de los convenios (v6)
+
+- El email, teléfono, vigencia (desde/hasta) y las notas internas de cada convenio **no se muestran en el sitio**:
+  solo se ven en el backoffice. Están protegidos en la base de datos (permisos por columna), no solo ocultos en pantalla.
+- Las páginas públicas piden únicamente las columnas listadas en `lib/benefitColumns.ts`.
+  Si se suma una columna pública nueva, hay que agregarla ahí **y** en `supabase/private-fields-2-cerrar-permisos.sql`.
+- Los scripts SQL se corren en orden: `private-fields-1-...` (antes del deploy) y `private-fields-2-...` (después).

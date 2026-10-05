@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { adminApi } from '@/lib/adminApi'
 import type { Benefit, Category } from '@/lib/types'
-import { normalizar, benefitAudienceLabel, type Audience } from '@/lib/utils'
+import { normalizar, benefitAudienceLabel, vigenciaEstado, type Audience } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -120,16 +120,17 @@ export default function AdminConveniosPage() {
               <th className="px-4 py-3">Comunidad</th>
               <th className="px-4 py-3">Rubro</th>
               <th className="px-4 py-3">Estado</th>
+              <th className="px-4 py-3">Vigencia</th>
               <th className="px-4 py-3">Destacado</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {cargando && (
-              <tr><td colSpan={7} className="px-4 py-6 text-center text-gray-400">Cargando...</td></tr>
+              <tr><td colSpan={8} className="px-4 py-6 text-center text-gray-400">Cargando...</td></tr>
             )}
             {!cargando && filtrados.length === 0 && (
-              <tr><td colSpan={7} className="px-4 py-6 text-center text-gray-400">Sin resultados.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-6 text-center text-gray-400">Sin resultados.</td></tr>
             )}
             {filtrados.map((b) => (
               <tr key={b.id} className="border-t border-gray-100">
@@ -150,6 +151,18 @@ export default function AdminConveniosPage() {
                   >
                     {b.status === 'active' ? 'Activo' : 'Inactivo'}
                   </button>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {(() => {
+                    const v = vigenciaEstado(b.valid_until)
+                    const estilos = {
+                      none: 'text-gray-400',
+                      ok: 'text-gray-600',
+                      soon: 'bg-[#FFF3E0] text-naranja font-semibold px-2 py-0.5 rounded-full',
+                      expired: 'bg-red-100 text-red-700 font-semibold px-2 py-0.5 rounded-full',
+                    }
+                    return <span className={`text-xs ${estilos[v.tone]}`}>{v.label}</span>
+                  })()}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {b.is_featured && <span className="text-naranja text-xs font-semibold">★ Destacado</span>}
