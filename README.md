@@ -58,3 +58,10 @@ Ver instrucciones completas de Supabase, Resend y Vercel en las conversaciones p
 - Las páginas públicas piden únicamente las columnas listadas en `lib/benefitColumns.ts`.
   Si se suma una columna pública nueva, hay que agregarla ahí **y** en `supabase/private-fields-2-cerrar-permisos.sql`.
 - Los scripts SQL se corren en orden: `private-fields-1-...` (antes del deploy) y `private-fields-2-...` (después).
+
+## Diagnóstico de lecturas públicas (v8)
+
+- `lib/supabaseClient.ts` manda solo el encabezado `apikey` (no `Authorization`) con la clave publicable.
+- Las páginas públicas ya no se muestran "vacías" cuando falla la base: muestran un aviso y dejan el motivo en
+  Vercel → Logs con el prefijo `[sitio-publico]`.
+- `/api/diagnostico` es una página TEMPORAL para depurar. **Borrar `app/api/diagnostico/` cuando ya no se use.**

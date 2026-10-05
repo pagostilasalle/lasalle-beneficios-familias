@@ -5,18 +5,25 @@ import { supabase } from '@/lib/supabaseClient'
 import { isAudience, visibleAudiences, hasText, type Audience } from '@/lib/utils'
 import type { BenefitPublic, Category } from '@/lib/types'
 import { BENEFIT_PUBLIC_COLUMNS } from '@/lib/benefitColumns'
+import { logError } from '@/lib/logError'
 
 export const revalidate = 60
 
 async function getConvenio(slug: string, audience: Audience) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('benefits')
     .select(`${BENEFIT_PUBLIC_COLUMNS}, category:categories(*)`)
     .eq('slug', slug)
     .eq('status', 'active')
     .in('audience', visibleAudiences(audience))
     .single()
-  return data as unknown as (BenefitPublic & { category: Category }) | null
+  // PGRST116 = "no hay ningún convenio así" (es un 404 normal). Cualquier otro error es un fallo real.
+  const noExiste = error?.code === 'PGRST116'
+  if (error && !noExiste) logError(`convenio/${slug}`, error)
+  return {
+    convenio: data as unknown as (BenefitPublic & { category: Category }) | null,
+    fallo: Boolean(error && !noExiste),
+  }
 }
 
 export default async function ConvenioDetallePage({
@@ -25,7 +32,17 @@ export default async function ConvenioDetallePage({
   params: { audience: string; slug: string }
 }) {
   if (!isAudience(params.audience)) notFound()
-  const convenio = await getConvenio(params.slug, params.audience)
+  const { convenio, fallo } = await getConvenio(params.slug, params.audience)
+  if (fallo) {
+    return (
+      <section className="max-w-xl mx-auto px-4 py-20 text-center">
+        <p className="text-gray-700 mb-4">No pudimos cargar este convenio en este momento. Probá de nuevo en unos minutos.</p>
+        <Link href={`/${params.audience}/convenios`} className="text-marino font-medium hover:text-naranja">
+          ← Volver a los convenios
+        </Link>
+      </section>
+    )
+  }
   if (!convenio) notFound()
 
   // Solo se muestran las secciones que tienen texto. Lo que se deje vacío en el backoffice no aparece.

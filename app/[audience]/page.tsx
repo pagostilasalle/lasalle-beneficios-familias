@@ -5,11 +5,12 @@ import { supabase } from '@/lib/supabaseClient'
 import { isAudience, audienceLabel, visibleAudiences, hasText, type Audience } from '@/lib/utils'
 import type { BenefitPublic, Category } from '@/lib/types'
 import { BENEFIT_PUBLIC_COLUMNS } from '@/lib/benefitColumns'
+import { logError } from '@/lib/logError'
 
 export const revalidate = 60
 
 async function getDestacados(audience: Audience) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('benefits')
     .select(BENEFIT_PUBLIC_COLUMNS)
     .eq('status', 'active')
@@ -17,22 +18,25 @@ async function getDestacados(audience: Audience) {
     .or('is_featured.eq.true,is_new.eq.true')
     .order('created_at', { ascending: false })
     .limit(6)
+  logError('home/destacados', error)
   return (data as unknown as BenefitPublic[]) ?? []
 }
 
 async function getRubrosConConvenios(audience: Audience) {
-  const { data: categories } = await supabase
+  const { data: categories, error: errCat } = await supabase
     .from('categories')
     .select('*')
     .eq('active', true)
     .order('sort_order')
 
-  const { data: benefits } = await supabase
+  const { data: benefits, error: errBen } = await supabase
     .from('benefits')
     .select('category_id')
     .eq('status', 'active')
     .in('audience', visibleAudiences(audience))
 
+  logError('home/rubros', errCat)
+  logError('home/rubros-convenios', errBen)
   const idsConConvenio = new Set((benefits ?? []).map((b) => b.category_id))
   return ((categories as Category[]) ?? []).filter((c) => idsConConvenio.has(c.id))
 }
