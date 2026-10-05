@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { ContactMessage } from '@/lib/types'
 import { audienceLabel, type Audience } from '@/lib/utils'
 
@@ -12,14 +12,21 @@ export default function AdminMensajesPage() {
   const [filtroAudience, setFiltroAudience] = useState<'todos' | Audience>('todos')
 
   const load = async () => {
-    const { data } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false })
-    setMensajes((data as ContactMessage[]) ?? [])
+    try {
+      setMensajes(await adminApi.list<ContactMessage>('contact_messages'))
+    } catch (e: any) {
+      alert(e.message)
+    }
   }
 
   useEffect(() => { load() }, [])
 
   const marcarLeido = async (m: ContactMessage) => {
-    await supabase.from('contact_messages').update({ status: m.status === 'pending' ? 'read' : 'pending' }).eq('id', m.id)
+    try {
+      await adminApi.update('contact_messages', m.id, { status: m.status === 'pending' ? 'read' : 'pending' })
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 

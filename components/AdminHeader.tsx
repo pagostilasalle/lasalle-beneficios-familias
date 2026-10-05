@@ -15,8 +15,8 @@ export default function AdminHeader() {
   const pathname = usePathname()
   const router = useRouter()
 
-  const logout = () => {
-    localStorage.removeItem('admin_auth')
+  const logout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' })
     router.push('/admin/login')
   }
 

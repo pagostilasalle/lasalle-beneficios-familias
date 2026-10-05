@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { Category } from '@/lib/types'
 import { slugify } from '@/lib/utils'
 
@@ -12,8 +12,11 @@ export default function AdminCategoriasPage() {
   const [nuevoNombre, setNuevoNombre] = useState('')
 
   const load = async () => {
-    const { data } = await supabase.from('categories').select('*').order('sort_order')
-    setCategories((data as Category[]) ?? [])
+    try {
+      setCategories(await adminApi.list<Category>('categories'))
+    } catch (e: any) {
+      alert(e.message)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -21,17 +24,25 @@ export default function AdminCategoriasPage() {
   const crear = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nuevoNombre.trim()) return
-    await supabase.from('categories').insert({
-      name: nuevoNombre,
-      slug: slugify(nuevoNombre),
-      sort_order: categories.length + 1,
-    })
-    setNuevoNombre('')
+    try {
+      await adminApi.create('categories', {
+        name: nuevoNombre,
+        slug: slugify(nuevoNombre),
+        sort_order: categories.length + 1,
+      })
+      setNuevoNombre('')
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 
   const toggleActivo = async (c: Category) => {
-    await supabase.from('categories').update({ active: !c.active }).eq('id', c.id)
+    try {
+      await adminApi.update('categories', c.id, { active: !c.active })
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 
@@ -40,8 +51,12 @@ export default function AdminCategoriasPage() {
     if (destino < 0 || destino >= categories.length) return
     const a = categories[index]
     const b = categories[destino]
-    await supabase.from('categories').update({ sort_order: b.sort_order }).eq('id', a.id)
-    await supabase.from('categories').update({ sort_order: a.sort_order }).eq('id', b.id)
+    try {
+      await adminApi.update('categories', a.id, { sort_order: b.sort_order })
+      await adminApi.update('categories', b.id, { sort_order: a.sort_order })
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 

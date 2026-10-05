@@ -5,16 +5,30 @@ import { useRouter } from 'next/navigation'
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
+  const [enviando, setEnviando] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      localStorage.setItem('admin_auth', 'true')
+    setEnviando(true)
+    setError('')
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(json.error || 'No se pudo ingresar.')
+        setEnviando(false)
+        return
+      }
       router.push('/admin')
-    } else {
-      setError(true)
+    } catch {
+      setError('No se pudo conectar. Probá de nuevo.')
+      setEnviando(false)
     }
   }
 
@@ -29,9 +43,13 @@ export default function AdminLoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1e2a65] outline-none"
         />
-        {error && <p className="text-red-600 text-sm">Contraseña incorrecta.</p>}
-        <button type="submit" className="bg-marino hover:bg-marinoHover text-white px-6 py-3 rounded-xl font-medium transition-colors">
-          Ingresar
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+        <button
+          type="submit"
+          disabled={enviando}
+          className="bg-marino hover:bg-marinoHover text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-60"
+        >
+          {enviando ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
     </div>

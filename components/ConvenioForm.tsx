@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { Benefit, Category } from '@/lib/types'
 import { slugify } from '@/lib/utils'
 
@@ -35,12 +35,11 @@ export default function ConvenioForm({ convenio }: Props) {
   const [categories, setCategories] = useState<Category[]>([])
   const [form, setForm] = useState(convenio ? { ...emptyForm, ...convenio } : emptyForm)
   const [guardando, setGuardando] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   useEffect(() => {
-    supabase.from('categories').select('*').order('sort_order').then(({ data }) => {
-      setCategories((data as Category[]) ?? [])
-    })
+    adminApi.list<Category>('categories').then(setCategories).catch(() => setCategories([]))
   }, [])
 
   const set = (campo: string, valor: any) => setForm((f) => ({ ...f, [campo]: valor }))
@@ -48,6 +47,7 @@ export default function ConvenioForm({ convenio }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setGuardando(true)
+    setError('')
 
     const payload: Record<string, any> = {
       ...form,
@@ -60,14 +60,17 @@ export default function ConvenioForm({ convenio }: Props) {
     delete payload.created_at
     delete payload.updated_at
 
-    if (convenio) {
-      await supabase.from('benefits').update(payload).eq('id', convenio.id)
-    } else {
-      await supabase.from('benefits').insert(payload)
+    try {
+      if (convenio) {
+        await adminApi.update('benefits', convenio.id, payload)
+      } else {
+        await adminApi.create('benefits', payload)
+      }
+      router.push('/admin/convenios')
+    } catch (e: any) {
+      setError(e.message)
+      setGuardando(false)
     }
-
-    setGuardando(false)
-    router.push('/admin/convenios')
   }
 
   return (
@@ -202,6 +205,8 @@ export default function ConvenioForm({ convenio }: Props) {
           Marcar como "Nuevo"
         </label>
       </div>
+
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <button type="submit" disabled={guardando}
         className="self-start bg-marino hover:bg-marinoHover text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-60">

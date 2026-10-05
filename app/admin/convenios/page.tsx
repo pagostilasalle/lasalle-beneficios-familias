@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { Benefit, Category } from '@/lib/types'
 import { normalizar, audienceLabel, type Audience } from '@/lib/utils'
 
@@ -19,12 +19,16 @@ export default function AdminConveniosPage() {
 
   const load = async () => {
     setCargando(true)
-    const [{ data: b }, { data: c }] = await Promise.all([
-      supabase.from('benefits').select('*, category:categories(*)').order('created_at', { ascending: false }),
-      supabase.from('categories').select('*').order('sort_order'),
-    ])
-    setBenefits((b as any) ?? [])
-    setCategories((c as Category[]) ?? [])
+    try {
+      const [b, c] = await Promise.all([
+        adminApi.list('benefits'),
+        adminApi.list('categories'),
+      ])
+      setBenefits(b)
+      setCategories(c)
+    } catch (e: any) {
+      alert(e.message)
+    }
     setCargando(false)
   }
 
@@ -43,13 +47,21 @@ export default function AdminConveniosPage() {
 
   const toggleEstado = async (b: Benefit) => {
     const nuevoEstado = b.status === 'active' ? 'inactive' : 'active'
-    await supabase.from('benefits').update({ status: nuevoEstado }).eq('id', b.id)
+    try {
+      await adminApi.update('benefits', b.id, { status: nuevoEstado })
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 
   const eliminar = async (id: string) => {
     if (!confirm('¿Eliminar este convenio? Esta acción no se puede deshacer.')) return
-    await supabase.from('benefits').delete().eq('id', id)
+    try {
+      await adminApi.remove('benefits', id)
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 

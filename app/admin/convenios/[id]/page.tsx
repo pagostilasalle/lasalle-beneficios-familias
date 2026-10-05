@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { Benefit } from '@/lib/types'
 import ConvenioForm from '@/components/ConvenioForm'
 
@@ -12,10 +12,10 @@ export default function EditarConvenioPage({ params }: { params: { id: string } 
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    supabase.from('benefits').select('*').eq('id', params.id).single().then(({ data }) => {
-      setConvenio(data as Benefit)
-      setCargando(false)
-    })
+    adminApi.get<Benefit>('benefits', params.id)
+      .then((data) => setConvenio(data))
+      .catch(() => setConvenio(null))
+      .finally(() => setCargando(false))
   }, [params.id])
 
   if (cargando) return <p className="text-gray-400">Cargando...</p>

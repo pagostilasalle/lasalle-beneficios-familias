@@ -42,3 +42,11 @@ Si ya tenías el proyecto anterior corriendo en tu compu:
 ## Puesta en marcha (referencia general)
 
 Ver instrucciones completas de Supabase, Resend y Vercel en las conversaciones previas del proyecto.
+
+## Seguridad (v4)
+
+- El backoffice **ya no escribe en la base desde el navegador**. Todo pasa por rutas del servidor
+  (`/api/admin/...`) que exigen una sesión válida (cookie segura, 8 horas).
+- Variables **secretas** (solo servidor, sin `NEXT_PUBLIC_`): `ADMIN_PASSWORD` y `SUPABASE_SERVICE_ROLE_KEY`.
+  La variable vieja `NEXT_PUBLIC_ADMIN_PASSWORD` **ya no se usa y hay que borrarla** de Vercel y de `.env.local`.
+- `supabase/security.sql` cierra los permisos públicos de la base (correr una vez, al final).

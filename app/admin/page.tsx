@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,37 +13,33 @@ export default function AdminDashboardPage() {
     porRubro: [] as { rubro: string; cantidad: number }[],
     mensajesPendientes: 0,
   })
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const load = async () => {
-      const { data: benefits } = await supabase
-        .from('benefits')
-        .select('status, audience, category:categories(name)')
+      try {
+        const [benefits, mensajes] = await Promise.all([
+          adminApi.list('benefits'),
+          adminApi.list('contact_messages'),
+        ])
 
-      const { count: mensajesPendientes } = await supabase
-        .from('contact_messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending')
-
-      const activosFamilias = (benefits ?? []).filter((b: any) => b.status === 'active' && b.audience === 'familias').length
-      const activosDocentes = (benefits ?? []).filter((b: any) => b.status === 'active' && b.audience === 'docentes').length
-      const inactivos = (benefits ?? []).filter((b: any) => b.status === 'inactive').length
-
-      const conteoRubro: Record<string, number> = {}
-      ;(benefits ?? [])
-        .filter((b: any) => b.status === 'active')
-        .forEach((b: any) => {
+        const activos = benefits.filter((b: any) => b.status === 'active')
+        const conteoRubro: Record<string, number> = {}
+        activos.forEach((b: any) => {
           const nombre = b.category?.name ?? 'Sin rubro'
           conteoRubro[nombre] = (conteoRubro[nombre] ?? 0) + 1
         })
 
-      setStats({
-        activosFamilias,
-        activosDocentes,
-        inactivos,
-        porRubro: Object.entries(conteoRubro).map(([rubro, cantidad]) => ({ rubro, cantidad })),
-        mensajesPendientes: mensajesPendientes ?? 0,
-      })
+        setStats({
+          activosFamilias: activos.filter((b: any) => b.audience === 'familias').length,
+          activosDocentes: activos.filter((b: any) => b.audience === 'docentes').length,
+          inactivos: benefits.filter((b: any) => b.status === 'inactive').length,
+          porRubro: Object.entries(conteoRubro).map(([rubro, cantidad]) => ({ rubro, cantidad })),
+          mensajesPendientes: mensajes.filter((m: any) => m.status === 'pending').length,
+        })
+      } catch (e: any) {
+        setError(e.message)
+      }
     }
     load()
   }, [])
@@ -51,6 +47,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-marino">Dashboard</h1>
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <div className="grid sm:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

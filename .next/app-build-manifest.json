@@ -20,11 +20,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/[audience]/layout.js"
-    ],
-    "/[audience]/convenios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[audience]/convenios/page.js"
     ]
   }
 }

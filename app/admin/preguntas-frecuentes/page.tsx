@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { adminApi } from '@/lib/adminApi'
 import type { Faq } from '@/lib/types'
 import { audienceLabel, type Audience } from '@/lib/utils'
 
@@ -16,8 +16,11 @@ export default function AdminFaqPage() {
   const [filtroAudience, setFiltroAudience] = useState<'todos' | Audience>('todos')
 
   const load = async () => {
-    const { data } = await supabase.from('faqs').select('*').order('sort_order')
-    setFaqs((data as Faq[]) ?? [])
+    try {
+      setFaqs(await adminApi.list<Faq>('faqs'))
+    } catch (e: any) {
+      alert(e.message)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -26,13 +29,17 @@ export default function AdminFaqPage() {
     e.preventDefault()
     if (!form.question.trim() || !form.answer.trim()) return
 
-    if (editando) {
-      await supabase.from('faqs').update(form).eq('id', editando)
-    } else {
-      await supabase.from('faqs').insert({ ...form, sort_order: faqs.length + 1 })
+    try {
+      if (editando) {
+        await adminApi.update('faqs', editando, form)
+      } else {
+        await adminApi.create('faqs', { ...form, sort_order: faqs.length + 1 })
+      }
+      setForm(emptyForm)
+      setEditando(null)
+    } catch (e: any) {
+      alert(e.message)
     }
-    setForm(emptyForm)
-    setEditando(null)
     load()
   }
 
@@ -43,12 +50,20 @@ export default function AdminFaqPage() {
 
   const eliminar = async (id: string) => {
     if (!confirm('¿Eliminar esta pregunta?')) return
-    await supabase.from('faqs').delete().eq('id', id)
+    try {
+      await adminApi.remove('faqs', id)
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 
   const toggleActivo = async (faq: Faq) => {
-    await supabase.from('faqs').update({ active: !faq.active }).eq('id', faq.id)
+    try {
+      await adminApi.update('faqs', faq.id, { active: !faq.active })
+    } catch (e: any) {
+      alert(e.message)
+    }
     load()
   }
 
