@@ -31,8 +31,8 @@ export default function AdminDashboardPage() {
         })
 
         setStats({
-          activosFamilias: activos.filter((b: any) => b.audience === 'familias').length,
-          activosDocentes: activos.filter((b: any) => b.audience === 'docentes').length,
+          activosFamilias: activos.filter((b: any) => b.audience === 'familias' || b.audience === 'ambas').length,
+          activosDocentes: activos.filter((b: any) => b.audience === 'docentes' || b.audience === 'ambas').length,
           inactivos: benefits.filter((b: any) => b.status === 'inactive').length,
           porRubro: Object.entries(conteoRubro).map(([rubro, cantidad]) => ({ rubro, cantidad })),
           mensajesPendientes: mensajes.filter((m: any) => m.status === 'pending').length,

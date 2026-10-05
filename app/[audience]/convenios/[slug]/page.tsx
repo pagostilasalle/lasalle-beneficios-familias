@@ -2,19 +2,19 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { isAudience } from '@/lib/utils'
+import { isAudience, visibleAudiences, type Audience } from '@/lib/utils'
 import type { Benefit, Category } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 export const revalidate = 60
 
-async function getConvenio(slug: string, audience: string) {
+async function getConvenio(slug: string, audience: Audience) {
   const { data } = await supabase
     .from('benefits')
     .select('*, category:categories(*)')
     .eq('slug', slug)
     .eq('status', 'active')
-    .eq('audience', audience)
+    .in('audience', visibleAudiences(audience))
     .single()
   return data as (Benefit & { category: Category }) | null
 }

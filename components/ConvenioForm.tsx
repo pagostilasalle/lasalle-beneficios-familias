@@ -12,7 +12,7 @@ const emptyForm = {
   title: '',
   company_name: '',
   category_id: '',
-  audience: 'familias' as 'familias' | 'docentes',
+  audience: 'familias' as 'familias' | 'docentes' | 'ambas',
   logo_url: '',
   cover_image_url: '',
   short_description: '',
@@ -78,7 +78,7 @@ export default function ConvenioForm({ convenio }: Props) {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
         <div>
           <label className="block text-sm font-medium text-marino mb-2">Comunidad</label>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="radio"
@@ -96,6 +96,15 @@ export default function ConvenioForm({ convenio }: Props) {
                 onChange={() => set('audience', 'docentes')}
               />
               Personal Docente y No Docente
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="audience"
+                checked={form.audience === 'ambas'}
+                onChange={() => set('audience', 'ambas')}
+              />
+              Ambas comunidades
             </label>
           </div>
         </div>

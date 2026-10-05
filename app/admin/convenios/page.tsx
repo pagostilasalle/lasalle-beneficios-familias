@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { adminApi } from '@/lib/adminApi'
 import type { Benefit, Category } from '@/lib/types'
-import { normalizar, audienceLabel, type Audience } from '@/lib/utils'
+import { normalizar, benefitAudienceLabel, type Audience } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,7 +41,7 @@ export default function AdminConveniosPage() {
     const matchTexto = !q || normalizar(b.title).includes(q) || normalizar(b.company_name).includes(q)
     const matchEstado = filtroEstado === 'todos' || b.status === filtroEstado
     const matchRubro = filtroRubro === 'todos' || b.category_id === filtroRubro
-    const matchAudience = filtroAudience === 'todos' || b.audience === filtroAudience
+    const matchAudience = filtroAudience === 'todos' || b.audience === filtroAudience || b.audience === 'ambas'
     return matchTexto && matchEstado && matchRubro && matchAudience
   })
 
@@ -86,9 +86,9 @@ export default function AdminConveniosPage() {
           onChange={(e) => setFiltroAudience(e.target.value as any)}
           className="border border-gray-200 rounded-xl px-4 py-2.5"
         >
-          <option value="todos">Ambas comunidades</option>
-          <option value="familias">Familias y Estudiantes</option>
-          <option value="docentes">Personal Docente y No Docente</option>
+          <option value="todos">Todas las comunidades</option>
+          <option value="familias">Ve Familias y Estudiantes</option>
+          <option value="docentes">Ve Personal Docente y No Docente</option>
         </select>
         <select
           value={filtroEstado}
@@ -136,8 +136,8 @@ export default function AdminConveniosPage() {
                 <td className="px-4 py-3 font-medium text-marino whitespace-nowrap">{b.company_name}</td>
                 <td className="px-4 py-3">{b.title}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`px-2 py-0.5 rounded-full text-xs ${b.audience === 'familias' ? 'bg-[#FFF3E0] text-naranja' : 'bg-fondo text-marino'}`}>
-                    {audienceLabel(b.audience)}
+                  <span className={`px-2 py-0.5 rounded-full text-xs ${b.audience === 'familias' ? 'bg-[#FFF3E0] text-naranja' : b.audience === 'ambas' ? 'bg-marino text-white' : 'bg-fondo text-marino'}`}>
+                    {benefitAudienceLabel(b.audience)}
                   </span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">{b.category?.name ?? '—'}</td>

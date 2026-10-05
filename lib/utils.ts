@@ -31,3 +31,15 @@ export function isAudience(value: string): value is Audience {
 export function audienceLabel(audience: Audience): string {
   return audience === 'familias' ? 'Familias y Estudiantes' : 'Personal Docente y No Docente'
 }
+
+// Un convenio puede ser de una comunidad o de ambas. (FAQ y mensajes siguen siendo de una sola.)
+export type BenefitAudience = Audience | 'ambas'
+
+export function benefitAudienceLabel(audience: BenefitAudience): string {
+  return audience === 'ambas' ? 'Ambas comunidades' : audienceLabel(audience)
+}
+
+// Qué valores de "audience" ve cada comunidad: los suyos + los de "ambas".
+export function visibleAudiences(audience: Audience): BenefitAudience[] {
+  return [audience, 'ambas']
+}

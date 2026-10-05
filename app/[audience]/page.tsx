@@ -2,24 +2,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { isAudience, audienceLabel } from '@/lib/utils'
+import { isAudience, audienceLabel, visibleAudiences, type Audience } from '@/lib/utils'
 import type { Benefit, Category } from '@/lib/types'
 
 export const revalidate = 60
 
-async function getDestacados(audience: string) {
+async function getDestacados(audience: Audience) {
   const { data } = await supabase
     .from('benefits')
     .select('*')
     .eq('status', 'active')
-    .eq('audience', audience)
+    .in('audience', visibleAudiences(audience))
     .or('is_featured.eq.true,is_new.eq.true')
     .order('created_at', { ascending: false })
     .limit(6)
   return (data as Benefit[]) ?? []
 }
 
-async function getRubrosConConvenios(audience: string) {
+async function getRubrosConConvenios(audience: Audience) {
   const { data: categories } = await supabase
     .from('categories')
     .select('*')
@@ -30,19 +30,19 @@ async function getRubrosConConvenios(audience: string) {
     .from('benefits')
     .select('category_id')
     .eq('status', 'active')
-    .eq('audience', audience)
+    .in('audience', visibleAudiences(audience))
 
   const idsConConvenio = new Set((benefits ?? []).map((b) => b.category_id))
   return ((categories as Category[]) ?? []).filter((c) => idsConConvenio.has(c.id))
 }
 
-async function getStats(audience: string) {
+async function getStats(audience: Audience) {
   const [{ count: totalConvenios }, rubros] = await Promise.all([
     supabase
       .from('benefits')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'active')
-      .eq('audience', audience),
+      .in('audience', visibleAudiences(audience)),
     getRubrosConConvenios(audience),
   ])
   return {

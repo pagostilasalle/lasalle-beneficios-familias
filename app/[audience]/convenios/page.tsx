@@ -1,15 +1,15 @@
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { isAudience } from '@/lib/utils'
+import { isAudience, visibleAudiences, type Audience } from '@/lib/utils'
 import type { Benefit, Category } from '@/lib/types'
 import ConveniosConBusqueda from '@/components/ConveniosConBusqueda'
 
 export const revalidate = 60
 
-async function getData(audience: string) {
+async function getData(audience: Audience) {
   const [{ data: categories }, { data: benefits }] = await Promise.all([
     supabase.from('categories').select('*').eq('active', true).order('sort_order'),
-    supabase.from('benefits').select('*').eq('status', 'active').eq('audience', audience).order('company_name'),
+    supabase.from('benefits').select('*').eq('status', 'active').in('audience', visibleAudiences(audience)).order('company_name'),
   ])
   return {
     categories: (categories as Category[]) ?? [],

@@ -1,4 +1,4 @@
-import type { Audience } from './utils'
+import type { Audience, BenefitAudience } from './utils'
 
 export type Category = {
   id: string
@@ -14,7 +14,7 @@ export type Benefit = {
   title: string
   company_name: string
   category_id: string
-  audience: Audience
+  audience: BenefitAudience
   category?: Category
   logo_url: string | null
   cover_image_url: string | null
