@@ -30,6 +30,16 @@ export default function AdminMensajesPage() {
     load()
   }
 
+  const eliminar = async (m: ContactMessage) => {
+    if (!confirm(`¿Eliminar el mensaje de ${m.name}? Esta acción no se puede deshacer.`)) return
+    try {
+      await adminApi.remove('contact_messages', m.id)
+    } catch (e: any) {
+      alert(e.message)
+    }
+    load()
+  }
+
   const mensajesFiltrados = mensajes.filter((m) => filtroAudience === 'todos' || m.audience === filtroAudience)
 
   return (
@@ -67,12 +77,20 @@ export default function AdminMensajesPage() {
                   {m.email} {m.phone ? `· ${m.phone}` : ''}
                 </p>
               </div>
-              <button
-                onClick={() => marcarLeido(m)}
-                className="text-xs font-medium text-marino hover:text-naranja whitespace-nowrap"
-              >
-                {m.status === 'pending' ? 'Marcar como leído' : 'Marcar como pendiente'}
-              </button>
+              <div className="flex items-center gap-4 whitespace-nowrap">
+                <button
+                  onClick={() => marcarLeido(m)}
+                  className="text-xs font-medium text-marino hover:text-naranja"
+                >
+                  {m.status === 'pending' ? 'Marcar como leído' : 'Marcar como pendiente'}
+                </button>
+                <button
+                  onClick={() => eliminar(m)}
+                  className="text-xs font-medium text-red-600 hover:text-red-700"
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
             <p className="text-gray-700 text-sm mt-3 whitespace-pre-line">{m.message}</p>
             <p className="text-xs text-gray-400 mt-3">
