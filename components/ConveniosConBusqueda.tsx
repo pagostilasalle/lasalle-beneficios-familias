@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { normalizar, type Audience } from '@/lib/utils'
+import { normalizar, hasText, type Audience } from '@/lib/utils'
 import type { BenefitPublic, Category } from '@/lib/types'
 
 type Props = {
@@ -24,7 +24,7 @@ export default function ConveniosConBusqueda({ audience, categories, benefits }:
         !q ||
         normalizar(b.title).includes(q) ||
         normalizar(b.company_name).includes(q) ||
-        normalizar(b.short_description).includes(q)
+        normalizar(b.short_description ?? '').includes(q)
       const matchRubro = rubroActivo === 'todos' || b.category_id === rubroActivo
       return matchTexto && matchRubro && b.status === 'active'
     })
@@ -143,9 +143,11 @@ export default function ConveniosConBusqueda({ audience, categories, benefits }:
                           )}
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {b.short_description}
-                      </p>
+                      {hasText(b.short_description) && (
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {b.short_description}
+                        </p>
+                      )}
                     </Link>
                   ))}
                 </div>

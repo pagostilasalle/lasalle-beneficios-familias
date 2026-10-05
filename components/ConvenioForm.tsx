@@ -139,29 +139,32 @@ export default function ConvenioForm({ convenio }: Props) {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+        <p className="text-xs text-gray-500">
+          Lo que dejes vacío <strong>no se muestra en el sitio</strong>. Solo Empresa, Título y Rubro son obligatorios.
+        </p>
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">Descripción corta (para cards)</label>
-          <textarea required rows={2} value={form.short_description} onChange={(e) => set('short_description', e.target.value)}
+          <label className="block text-sm font-medium text-marino mb-1">Descripción corta (para cards, opcional)</label>
+          <textarea rows={2} value={form.short_description} onChange={(e) => set('short_description', e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">Descripción completa</label>
-          <textarea required rows={4} value={form.full_description} onChange={(e) => set('full_description', e.target.value)}
+          <label className="block text-sm font-medium text-marino mb-1">Descripción completa (opcional)</label>
+          <textarea rows={4} value={form.full_description} onChange={(e) => set('full_description', e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">¿Quiénes pueden acceder?</label>
-          <textarea required rows={2} value={form.who_can_apply} onChange={(e) => set('who_can_apply', e.target.value)}
+          <label className="block text-sm font-medium text-marino mb-1">¿Quiénes pueden acceder? (opcional)</label>
+          <textarea rows={2} value={form.who_can_apply} onChange={(e) => set('who_can_apply', e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">¿Cómo aplico?</label>
-          <textarea required rows={2} value={form.how_to_apply} onChange={(e) => set('how_to_apply', e.target.value)}
+          <label className="block text-sm font-medium text-marino mb-1">¿Cómo aplico? (opcional)</label>
+          <textarea rows={2} value={form.how_to_apply} onChange={(e) => set('how_to_apply', e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-marino mb-1">¿Cómo obtengo el beneficio?</label>
-          <textarea required rows={2} value={form.how_to_redeem} onChange={(e) => set('how_to_redeem', e.target.value)}
+          <label className="block text-sm font-medium text-marino mb-1">¿Cómo obtengo el beneficio? (opcional)</label>
+          <textarea rows={2} value={form.how_to_redeem} onChange={(e) => set('how_to_redeem', e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1e2a65] outline-none" />
         </div>
         <div>

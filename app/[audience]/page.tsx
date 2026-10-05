@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { isAudience, audienceLabel, visibleAudiences, type Audience } from '@/lib/utils'
+import { isAudience, audienceLabel, visibleAudiences, hasText, type Audience } from '@/lib/utils'
 import type { BenefitPublic, Category } from '@/lib/types'
 import { BENEFIT_PUBLIC_COLUMNS } from '@/lib/benefitColumns'
 
@@ -149,7 +149,9 @@ export default async function AudienceHomePage({ params }: { params: { audience:
                     </div>
                   </div>
                   <p className="font-medium text-black">{b.title}</p>
-                  <p className="text-sm text-gray-600 line-clamp-2">{b.short_description}</p>
+                  {hasText(b.short_description) && (
+                    <p className="text-sm text-gray-600 line-clamp-2">{b.short_description}</p>
+                  )}
                 </div>
                 <div className="h-1.5 bg-naranja" />
               </Link>

@@ -42,6 +42,11 @@ export function vigenciaEstado(validUntil: string | null, hoy: Date = new Date()
   return { tone: 'ok', label: `Hasta el ${formatDate(validUntil)}` }
 }
 
+// true si el texto existe y no es solo espacios en blanco. Se usa para no mostrar secciones vacías.
+export function hasText(value: string | null | undefined): boolean {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
 export type Audience = 'familias' | 'docentes'
 
 export function isAudience(value: string): value is Audience {
